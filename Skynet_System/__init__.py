@@ -1,5 +1,6 @@
 """Gets ENV vars or Config vars then calls class."""
 
+
 import traceback
 import logging
 import os
@@ -20,8 +21,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-ENV = bool(os.environ.get("ENV", False))
-if ENV:
+if ENV := bool(os.environ.get("ENV", False)):
     API_ID_KEY = int(os.environ.get("API_ID_KEY"))
     API_HASH_KEY = os.environ.get("API_HASH_KEY")
     STRING_SESSION = os.environ.get("STRING_SESSION")
@@ -65,10 +65,6 @@ from .client_class import SkynetClient
 
 #try:
 System = SkynetClient(StringSession(STRING_SESSION), API_ID_KEY, API_HASH_KEY)
-#except:
- #   print(traceback.format_exc())
-  #  exit(1)
-
 collection = MONGO_CLIENT["Skynet"]["Main"]
 
 
@@ -76,26 +72,27 @@ async def make_collections() -> str:
     if (
         await collection.count_documents({"_id": 1}, limit=1) == 0
     ):  # Blacklisted words list
-        dictw = {"_id": 1}
-        dictw["blacklisted"] = []
+        dictw = {'_id': 1, 'blacklisted': []}
         await collection.insert_one(dictw)
 
     if (
         await collection.count_documents({"_id": 2}, limit=1) == 0
     ):  # Blacklisted words in name list
-        dictw = {"_id": 2, "Type": "Wlc Blacklist"}
-        dictw["blacklisted_wlc"] = []
+        dictw = {'_id': 2, 'Type': 'Wlc Blacklist', 'blacklisted_wlc': []}
         await collection.insert_one(dictw)
     if await collection.count_documents({"_id": 3}, limit=1) == 0:  # Gbanned users list
-        dictw = {"_id": 3, "Type": "Gban:List"}
-        dictw["victim"] = []
-        dictw["gbanners"] = []
-        dictw["reason"] = []
-        dictw["proof_id"] = []
+        dictw = {
+            '_id': 3,
+            'Type': 'Gban:List',
+            'victim': [],
+            'gbanners': [],
+            'reason': [],
+            'proof_id': [],
+        }
+
         await collection.insert_one(dictw)
     if await collection.count_documents({"_id": 4}, limit=1) == 0:  # Rank tree list
-        sample_dict = {"_id": 4, "data": {}, "standalone": {}}
-        sample_dict["data"] = {}
+        sample_dict = {'_id': 4, 'standalone': {}, 'data': {}}
         for x in Skynet:
             sample_dict["data"][str(x)] = {}
             sample_dict["standalone"][str(x)] = {
